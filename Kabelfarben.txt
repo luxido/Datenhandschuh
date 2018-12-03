@@ -1,0 +1,13 @@
+Orange = A0
+
+Grün = A1
+
+Blau = A2
+
+Lila = A3
+
+Grau = A6
+
+Rot = 
+3,3v Spannung
+Schwarz = Ground 
