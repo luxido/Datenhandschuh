@@ -16,10 +16,13 @@ using System.Collections;
  */
 public class SampleMessageListener : MonoBehaviour
 {
+    private char lineSeperater = '\n';
+
     // Invoked when a line of data is received from the serial device.
     void OnMessageArrived(string msg)
     {
         Debug.Log(msg);
+        System.IO.File.AppendAllText(Application.dataPath + "/SavedData.csv", msg + lineSeperater);
     }
 
     // Invoked when a connect/disconnect event occurs. The parameter 'success'

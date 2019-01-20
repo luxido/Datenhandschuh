@@ -6,11 +6,6 @@ long accelX, accelY, accelZ;
 float gForceX, gForceY, gForceZ, gyroX, gyroY, gyroZ,rotX, rotY, rotZ;
 long accelX2, accelY2, accelZ2;
 float gForceX2, gForceY2, gForceZ2;
-/*int a0 = 0; // Benennung als Variable für den Biegesensor
-int a1 = 0; // Benennung als Variable für den Biegesensor
-int a2 = 0; // Benennung als Variable für den Biegesensor
-int a3 = 0; // Benennung als Variable für den Biegesensor*/
-int a6 = 0; // Benennung als Variable für den Biegesensor
 
 
 void setup()
@@ -50,29 +45,28 @@ void setup()
   Serial.begin (9600); // Start der seriellen Verbindung für den serial monitor.
 }
 
+struct SFloatRawData {unsigned long t; int flex6; double ax, ay, az, gx, gy, gz;};
+
 void loop()
 {
-
-  /*a0 = analogRead(A0);
-  a1 = analogRead(A1);
-  a2 = analogRead(A2);
-  a3 = analogRead(A3);*/
-  a6 = analogRead(A6);
-  /*Serial.print ("a0: ");
-  Serial.print (a0); // Ausgabe des Sensorwertes der x-Achse an den serial monitor
-  Serial.print (" a1: "); // Ausgabe des Sensorwertes der y-Achse an den serial monitor
-  Serial.print (a1); // Ausgabe des Sensorwertes der y-Achse an den serial monitor
-  Serial.print (" a2: "); // Ausgabe des Sensorwertes der y-Achse an den serial monitor
-  Serial.print (a2); // Ausgabe des Sensorwertes der y-Achse an den serial monitor
-  Serial.print (" a3: "); // Ausgabe des Sensorwertes der y-Achse an den serial monitor
-  Serial.print (a3); // Ausgabe des Sensorwertes der y-Achse an den serial monitor
-  Serial.print (" a6: "); // Ausgabe des Sensorwertes der y-Achse an den serial monitor*/
-  Serial.print ("Biege: "); // Ausgabe des Sensorwertes der y-Achse an den serial monitor
-  Serial.println (a6); // Ausgabe von vier Leerzeichen
-
   GetMpuValue(MPU1);
 
   delay(100); // Wartezeit zwischen den einzelnen Ausgaben der Sensorwerte
+}
+
+void printCSVData(struct SFloatRawData fdata) {
+    static bool printHeader = true;
+    if (printHeader) {
+        Serial.println("time,Flex6,GyroX,GyroY,GyroZ,AccX,AccY,AccZ");
+        printHeader = false;
+    }
+    Serial.print(fdata.t);  Serial.print(",");
+    Serial.print(fdata.gx); Serial.print(",");
+    Serial.print(fdata.gy); Serial.print(",");
+    Serial.print(fdata.gz); Serial.print(",");
+    Serial.print(fdata.ax); Serial.print(",");
+    Serial.print(fdata.ay); Serial.print(",");
+    Serial.println(fdata.az);
 }
 
 void GetMpuValue(const int MPU){
@@ -94,23 +88,15 @@ void GetMpuValue(const int MPU){
   gyroY = Wire.read()<<8|Wire.read();
   gyroZ = Wire.read()<<8|Wire.read(); 
 
+  struct SFloatRawData fdata;
 
-  gForceX = accelX / 16384.0;
-  gForceY = accelY / 16384.0; 
-  gForceZ = accelZ / 16384.0;
-  rotX = gyroX / 131.0;
-  rotY = gyroY / 131.0; 
-  rotZ = gyroZ / 131.0;
-  Serial.print("Gyro: ");
-  Serial.print(rotX);
-  Serial.print(", ");
-  Serial.print(rotY);
-  Serial.print(", ");
-  Serial.println(rotZ);
-  Serial.print("Acc: ");
-  Serial.print(gForceX);
-  Serial.print(", ");
-  Serial.print(gForceY);
-  Serial.print(", ");
-  Serial.println(gForceZ);
+  /*a0 = analogRead(A0);
+  a1 = analogRead(A1);
+  a2 = analogRead(A2);
+  a3 = analogRead(A3);*/
+  fdata.t = millis();
+  fdata.flex6 = analogRead(A6);
+  fdata.ax = accelX / 16384.0; fdata.ay = accelY / 16384.0; fdata.az = accelZ / 16384.0;
+  fdata.gx = gyroX / 131.0; fdata.gy = gyroY / 131.0; fdata.gz = gyroZ / 131.0;
+  printCSVData(fdata);
 }
