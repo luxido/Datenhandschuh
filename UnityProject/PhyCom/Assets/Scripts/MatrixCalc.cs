@@ -56,140 +56,47 @@ public class MatrixCalc : MonoBehaviour {
     public float[,] Add2x2Matrices(float[,] firstMatrix, float[,] secondMatrix)
     {
         float[,] result = { { 0, 0 }, { 0, 0 } };
-
-        int rowLength = firstMatrix.Rank;
-        int columnLength = secondMatrix.Length / secondMatrix.Rank;
-
-        if (firstMatrix.Length == secondMatrix.Length &&
-            firstMatrix.Length/ firstMatrix.Rank == secondMatrix.Length /secondMatrix.Rank
-            && firstMatrix.Length == 2*2)
-        {
-
-
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    result[i, j] = firstMatrix[i, j] + secondMatrix[i, j];
-                }
-            }
-
-            return result;
-        }
-        else
-        {
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    result[i, j] = -123;
-                }
-            }
-            return result;
-        }
+        int i, j, n;
+        n = 2;
+        for (i = 0; i < n; i++)
+            for (j = 0; j < n; j++)
+                result[i, j] = firstMatrix[i, j] + secondMatrix[i, j];
+        return result;
     }
 
     public float[,] Add3x3Matrices(float[,] firstMatrix, float[,] secondMatrix)
     {
         float[,] result = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
 
-        int rowLength = firstMatrix.Rank;
-        int columnLength = secondMatrix.Length / secondMatrix.Rank;
-
-        if (firstMatrix.Length == secondMatrix.Length &&
-            firstMatrix.Length / firstMatrix.Rank == secondMatrix.Length / secondMatrix.Rank
-            && firstMatrix.Length == 3*3)
-        {
-
-
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    result[i, j] = firstMatrix[i, j] + secondMatrix[i, j];
-                }
-            }
-
-            return result;
-        }
-        else
-        {
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    result[i, j] = -123;
-                }
-            }
-            return result;
-        }
+        int i, j, n;
+        n = 3;
+        for (i = 0; i < n; i++)
+            for (j = 0; j < n; j++)
+                result[i, j] = firstMatrix[i, j] + secondMatrix[i, j];
+        return result;
     }
 
     public float[,] Sub2x2Matrices(float[,] firstMatrix, float[,] secondMatrix)
     {
         float[,] result = { { 0, 0 }, { 0, 0 } };
 
-        int rowLength = firstMatrix.Rank;
-        int columnLength = secondMatrix.Length / secondMatrix.Rank;
-
-        if (firstMatrix.Length == secondMatrix.Length &&
-            firstMatrix.Length / firstMatrix.Rank == secondMatrix.Length / secondMatrix.Rank
-            && firstMatrix.Length == 2 * 2)
-        {
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    result[i, j] = firstMatrix[i, j] - secondMatrix[i, j];
-                }
-            }
-
-            return result;
-        }
-        else
-        {
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    result[i, j] = -123;
-                }
-            }
-            return result;
-        }
+        int i, j, n;
+        n = 2;
+        for (i = 0; i < n; i++)
+            for (j = 0; j < n; j++)
+                result[i, j] = firstMatrix[i, j] - secondMatrix[i, j];
+        return result;
     }
 
     public float[,] Sub3x3Matrices(float[,] firstMatrix, float[,] secondMatrix)
     {
         float[,] result = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
 
-        int rowLength = firstMatrix.Rank;
-        int columnLength = secondMatrix.Length / secondMatrix.Rank;
-
-        if (firstMatrix.Length == secondMatrix.Length &&
-            firstMatrix.Length / firstMatrix.Rank == secondMatrix.Length / secondMatrix.Rank
-            && firstMatrix.Length == 3 * 3)
-        {
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    result[i, j] = firstMatrix[i, j] - secondMatrix[i, j];
-                }
-            }
-
-            return result;
-        }
-        else
-        {
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    result[i, j] = -123;
-                }
-            }
-            return result;
-        }
+        int i, j, n;
+        n = 3;
+        for (i = 0; i < n; i++)
+            for (j = 0; j < n; j++)
+                result[i, j] = firstMatrix[i, j] - secondMatrix[i, j];
+        return result;
     }
 }
