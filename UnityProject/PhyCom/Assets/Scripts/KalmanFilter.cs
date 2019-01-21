@@ -46,7 +46,7 @@ public class KalmanFilter : MonoBehaviour {
 
     void Start () {
         Ad = matrixCalc.Add3x3Matrices(A, Identity);
-        matrixCalc.printMatrix(Identity);
+        matrixCalc.printMatrix(A);
         //float[,] test = matrixCalc.Add2x2Matrices(A, Identity);
         //Debug.Log(test[0, 0] + ", " + test[0, 1]);
         //Debug.Log(test[1, 0] + ", " + test[1, 1]);
