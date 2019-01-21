@@ -71,9 +71,9 @@
     <Compile Include="Assets\Ardity\Scripts\Threads\SerialThread.cs" />
     <Compile Include="Assets\Ardity\Scripts\Threads\SerialThreadCustomDelimiter.cs" />
     <Compile Include="Assets\Ardity\Scripts\Threads\SerialThreadLines.cs" />
-    <Compile Include="Assets\Scripts\ArduinoController.cs" />
     <Compile Include="Assets\Scripts\KalmanFilter.cs" />
     <Compile Include="Assets\Scripts\MatrixCalc.cs" />
+    <Compile Include="Assets\Scripts\ReadCSV.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>F:/Daten/F_UNI/Projekte/Datenhandschuh/UnityProject/PhyCom/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
@@ -289,21 +289,6 @@
     </Reference>
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>F:/Program Files/2018.3.0f2/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Advertisements">
-      <HintPath>F:/Daten/F_UNI/Projekte/Datenhandschuh/UnityProject/PhyCom/Library/PackageCache/com.unity.ads@2.3.1/Runtime/UnityEngine.Advertisements.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.Advertisements.Editor">
-      <HintPath>F:/Daten/F_UNI/Projekte/Datenhandschuh/UnityProject/PhyCom/Library/PackageCache/com.unity.ads@2.3.1/Runtime/UnityEngine.Advertisements.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Analytics.Editor">
-      <HintPath>F:/Daten/F_UNI/Projekte/Datenhandschuh/UnityProject/PhyCom/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Analytics.StandardEvents">
-      <HintPath>F:/Daten/F_UNI/Projekte/Datenhandschuh/UnityProject/PhyCom/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.StandardEvents.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Analytics.Tracker">
-      <HintPath>F:/Daten/F_UNI/Projekte/Datenhandschuh/UnityProject/PhyCom/Library/PackageCache/com.unity.analytics@3.2.2/Unity.Analytics.Tracker.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>F:/Program Files/2018.3.0f2/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>

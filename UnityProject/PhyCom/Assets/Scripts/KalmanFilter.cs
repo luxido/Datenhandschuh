@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class KalmanFilter : MonoBehaviour {
 
-    MatrixCalc matrixCalc = new MatrixCalc();
+    MatrixCalc matrixCalc;
 
     float[,] Identity = { { 1, 0 , 0},
                           { 0, 1 , 0},
@@ -14,28 +14,21 @@ public class KalmanFilter : MonoBehaviour {
     public static float Ts = 0.033f;   //TaktRate
 
     //float[,] x = {Winkel(Biege & ausGyro errechnet), Winkelgeschwindigkeit(Gyro), Offset(Gyro) }   
-
     float[,] x0 = { { 0 }, { 0 }, { 0 } }; //Erster x-Eintrag
     float[,] P0 = { { 100, 0 , 0},
                     { 0, 100 , 0},
                     { 0, 0 , 100}};
-
     float[,] A = { { 0, Ts , -1}, 
                    { 0, 0 , 0},
                    { 0, 0 , 0}};
-
     float[,] Ad;
-
     float[,] C = { { 1, 0 , 0},
-                   { 0, 1 , 0} };
-                   
+                   { 0, 1 , 0} };              
     float[,] Gd = { { Ts,pow(0.5f*Ts, 2) , Ts},
                    { 0, Ts , 0},
                    { 0, 0 , Ts}};
-
     public static float sigma_biege = 3f;
     public static float sigma_gyro = 0.5f;
-
     public static float sigma_offset = -7f;
 
     float[,] Q = { { pow(sigma_biege,2), 0 , 0},
@@ -46,11 +39,14 @@ public class KalmanFilter : MonoBehaviour {
                    { 0, 702 , 0},
                    { 0, 0 , 0}};
 
+    private void Awake()
+    {
+        matrixCalc = gameObject.AddComponent<MatrixCalc>();
+    }
 
-    // Use this for initialization
     void Start () {
         Ad = matrixCalc.Add3x3Matrices(A, Identity);
-        Debug.Log("");
+        matrixCalc.printMatrix(Identity);
         //float[,] test = matrixCalc.Add2x2Matrices(A, Identity);
         //Debug.Log(test[0, 0] + ", " + test[0, 1]);
         //Debug.Log(test[1, 0] + ", " + test[1, 1]);
@@ -61,8 +57,6 @@ public class KalmanFilter : MonoBehaviour {
         //Debug.Log(test[0, 0]);
         //Debug.Log(test[1, 0]);
         //Debug.Log(test[2, 0]);
-
-
     }
 
     // Update is called once per frame

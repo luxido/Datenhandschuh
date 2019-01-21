@@ -17,6 +17,7 @@ using System.Collections;
 public class SampleMessageListener : MonoBehaviour
 {
     private char lineSeperater = '\n';
+    private char fieldSeperater = ';';
 
     // Invoked when a line of data is received from the serial device.
     void OnMessageArrived(string msg)

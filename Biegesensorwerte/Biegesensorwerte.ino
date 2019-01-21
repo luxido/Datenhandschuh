@@ -63,15 +63,14 @@ void printCSVData(struct SFloatRawData fdata) {
     }
     /*
     Serial.print(fdata.t);  Serial.print(",");
-    Serial.print(fdata.flex6); Serial.print(",");
     */
-    Serial.print(1);  Serial.print(",");
-    Serial.print(fdata.flex6); Serial.print(",");
-    //Serial.print(fdata.gx); Serial.print(",");
-    Serial.println(fdata.gy); 
-    //Serial.print(fdata.gz); Serial.print(",");
-    Serial.print(fdata.ax); Serial.print(",");
-    //Serial.print(fdata.ay); Serial.print(",");
+    Serial.print(1);  Serial.print(";");
+    Serial.print(fdata.flex6); Serial.print(";");
+    //Serial.print(fdata.gx); Serial.print(";");
+    Serial.print(fdata.gy); 
+    //Serial.print(fdata.gz); Serial.print(";");
+    Serial.print(fdata.ax); Serial.print(";");
+    //Serial.print(fdata.ay); Serial.print(";");
     Serial.println(fdata.az);
 }
 
