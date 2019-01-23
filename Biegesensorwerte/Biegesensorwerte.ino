@@ -58,13 +58,10 @@ void printCSVData(struct SFloatRawData fdata) {
     static bool printHeader = true;
     if (printHeader) {
         //Serial.println("time,Flex6,GyroX,GyroY,GyroZ,AccX,AccY,AccZ");
-        Serial.println("time,Flex6,GyroY,AccX,AccZ");
+        Serial.println("time,Flex6,GyroY");
         printHeader = false;
     }
-    /*
-    Serial.print(fdata.t);  Serial.print(",");
-    */
-    Serial.print(1);  Serial.print(";");
+    Serial.print(fdata.t);  Serial.print(";");
     Serial.print(fdata.flex6); Serial.print(";");
     //Serial.print(fdata.gx); Serial.print(";");
     Serial.println(fdata.gy); 
