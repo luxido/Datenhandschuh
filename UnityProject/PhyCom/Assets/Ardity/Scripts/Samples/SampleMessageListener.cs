@@ -8,6 +8,7 @@
 
 using UnityEngine;
 using System.Collections;
+using System;
 
 /**
  * When creating your message listeners you need to implement these two methods:
@@ -19,9 +20,39 @@ public class SampleMessageListener : MonoBehaviour
     private char lineSeperater = '\n';
     private char fieldSeperater = ';';
 
+    public KalmanFilter kalmanFilter;
+
     // Invoked when a line of data is received from the serial device.
     void OnMessageArrived(string msg)
     {
+        string data = msg;
+        // Split string on spaces (this will separate all the words).
+        string[] words = data.Split(';');
+
+        int x = 0;
+
+        if (words.Length > 1)
+        {
+            Int32.TryParse(words[1], out x);
+
+            x = kalmanFilter.FlexSensorToRad(x);
+            words[1] = x.ToString();
+
+            string tmpMsg = "";
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (i < words.Length - 1)
+                {
+                    tmpMsg = tmpMsg + words[i] + ";";
+                }
+                else
+                {
+                    tmpMsg = tmpMsg + words[i];
+                }
+            }
+
+            msg = tmpMsg;
+        }
         Debug.Log(msg);
         System.IO.File.AppendAllText(Application.dataPath + "/SavedData.csv", msg + lineSeperater);
     }

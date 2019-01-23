@@ -222,6 +222,13 @@ public class KalmanFilter : MonoBehaviour {
 
     }
 
+    public int FlexSensorToRad(int flexSensorValue)
+    {
+        float radValue = (flexSensorValue - 650) * 9/10; 
+
+        return (int)radValue;
+    }
+
     private static float pow(float f, int p)
     {
         float result = (float)Math.Pow(f, p);
