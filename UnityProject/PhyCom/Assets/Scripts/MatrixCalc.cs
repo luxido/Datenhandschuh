@@ -61,7 +61,6 @@ public class MatrixCalc : MonoBehaviour {
     {
         int rA = A.GetLength(0);
         int cA = A.GetLength(1);
-        float temp = 0;
         float[,] kHasil = new float[rA, cA];
         for (int i = 0; i < rA; i++)
         {
@@ -133,6 +132,14 @@ public class MatrixCalc : MonoBehaviour {
             Debug.Log("addition not Possible required rows and columns of both matrix equals");
         }
         return addition;
+    }
+
+    public float calcAngle(float a, float b)
+    {
+        double radians, angle;
+        radians = Math.Atan2(a,b);
+        angle = radians / Math.PI * 180;
+        return (float)angle;
     }
 
     //modified from http://www.rkinteractive.com/blogs/SoftwareDevelopment/post/2013/05/21/Algorithms-In-C-Finding-The-Inverse-Of-A-Matrix.aspx

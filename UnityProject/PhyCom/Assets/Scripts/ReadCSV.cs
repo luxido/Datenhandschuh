@@ -14,14 +14,15 @@ public class ReadCSV : MonoBehaviour
 
     void Awake()
     {
-        fieldSeperater = ",";
+        fieldSeperater = ";";
+        //fieldSeperater = ",";
         path = Application.dataPath + "/SavedData.csv";
-        path = Application.dataPath + "/drehung1_daten.csv";
+        //path = Application.dataPath + "/drehung1_daten.csv";
         fileData = System.IO.File.ReadAllText(path);
         lines = fileData.Split("\n"[0]);
         lineHeader = (lines[0].Trim()).Split(fieldSeperater[0]);
+        //print header
         PrintLine(0);
-        PrintLine(1);
 
     }
 
@@ -43,6 +44,20 @@ public class ReadCSV : MonoBehaviour
     {
         string[] line = (lines[index].Trim()).Split(fieldSeperater[0]);
         return line;
+    }
+
+    public int GetIndexOf(string name)
+    {
+        int index = 0;
+        for (int i = 0; i < lineHeader.Length; i++)
+        {
+            if (lineHeader[i].Equals(name))
+            {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 
     // Update is called once per frame
