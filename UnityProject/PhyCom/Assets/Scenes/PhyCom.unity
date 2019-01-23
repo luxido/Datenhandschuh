@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -129,7 +129,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &534669903
 AudioListener:
   m_ObjectHideFlags: 0
@@ -203,7 +203,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 128384, guid: a65acf0cbf56b80419f74ebf0bc845f4, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 405068, guid: a65acf0cbf56b80419f74ebf0bc845f4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -267,7 +267,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1032064153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -305,7 +305,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1458958302}
   - component: {fileID: 1458958301}
-  - component: {fileID: 1458958303}
   m_Layer: 0
   m_Name: KalmanFilter
   m_TagString: Untagged
@@ -325,8 +324,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25a85986e3783ff4cb5e4462363949d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Ts: 0.033
-  sigma_biege: 3
+  Ts: 0.103
+  sigma_biege: 0
   sigma_gyro: 0.5
   sigma_offset: -7
 --- !u!4 &1458958302
@@ -343,15 +342,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1458958303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1458958300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3cea33928a5050d4ba4ed4b054c6c916, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

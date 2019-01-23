@@ -16,7 +16,7 @@ public class ReadCSV : MonoBehaviour
     {
         fieldSeperater = ";";
         //fieldSeperater = ",";
-        path = Application.dataPath + "/SavedData.csv";
+        path = Application.dataPath + "/SavedData_BiegeUndRing.csv";
         //path = Application.dataPath + "/drehung1_daten.csv";
         fileData = System.IO.File.ReadAllText(path);
         lines = fileData.Split("\n"[0]);

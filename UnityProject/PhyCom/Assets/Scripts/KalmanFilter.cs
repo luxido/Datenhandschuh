@@ -8,7 +8,7 @@ public class KalmanFilter : MonoBehaviour {
     private MatrixCalc mCalc;
     private ReadCSV rCSV;
     //Ts -> TaktRate
-    public float Ts = 0.033f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = -7f;
+    public float Ts = 0.102f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = -7f;
 
     //float[,] x = {Winkel(Biege & ausGyro errechnet), Winkelgeschwindigkeit(Gyro), Offset(Gyro) }   
     private float[,] x0, P0, A, Ad, C, Gd, Q, R, Identity, Bd;
@@ -21,10 +21,6 @@ public class KalmanFilter : MonoBehaviour {
 
     private void setVariables()
     {
-        Ts = 0.033f;
-        sigma_biege = 3f;
-        sigma_gyro = 0.5f;
-
         Identity = new float[,] { 
             { 1, 0 , 0}, 
             { 0, 1 , 0}, 
@@ -192,7 +188,11 @@ public class KalmanFilter : MonoBehaviour {
 
             //P_post = (np.eye(2) - Kn * C) * P_priori
             P_post = mCalc.MultiplyMatrix(mCalc.SubMatrix(Identity, mCalc.MultiplyMatrix(Kn, C)),P_priori);
-
+            Debug.Log("yn");
+            mCalc.printMatrix(yn);
+            Debug.Log("Xpost");
+            mCalc.printMatrix(x_post);
+            //mCalc.printMatrix(P_post);
             x.Add(x_post);
             P.Add(P_post);
             K.Add(Kn);
