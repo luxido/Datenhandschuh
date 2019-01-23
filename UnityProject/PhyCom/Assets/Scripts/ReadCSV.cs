@@ -14,14 +14,15 @@ public class ReadCSV : MonoBehaviour
 
     void Awake()
     {
-        fieldSeperater = ",";
+        fieldSeperater = ";";
+        //fieldSeperater = ",";
         path = Application.dataPath + "/SavedData.csv";
-        path = Application.dataPath + "/drehung1_daten.csv";
+        //path = Application.dataPath + "/drehung1_daten.csv";
         fileData = System.IO.File.ReadAllText(path);
         lines = fileData.Split("\n"[0]);
         lineHeader = (lines[0].Trim()).Split(fieldSeperater[0]);
+        //print header
         PrintLine(0);
-        PrintLine(1);
 
     }
 
