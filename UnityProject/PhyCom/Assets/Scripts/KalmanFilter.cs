@@ -6,15 +6,17 @@ using UnityEngine;
 public class KalmanFilter : MonoBehaviour {
 
     private MatrixCalc mCalc;
+    private ReadCSV rCSV;
     //Ts -> TaktRate
     public float Ts = 0.033f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = -7f;
 
     //float[,] x = {Winkel(Biege & ausGyro errechnet), Winkelgeschwindigkeit(Gyro), Offset(Gyro) }   
-    private float[,] x0, P0, A, Ad, C, Gd, Q, R, Identity;
+    private float[,] x0, P0, A, Ad, C, Gd, Q, R, Identity, Bd;
 
     void Start () {
         mCalc = gameObject.AddComponent<MatrixCalc>();
-        setVariables();
+        rCSV = gameObject.AddComponent<ReadCSV>(); 
+        setVariablesExample();
         UseKalmanFilter();
     }
 
@@ -54,7 +56,8 @@ public class KalmanFilter : MonoBehaviour {
 
         C = new float[,]{ 
             { 1, 0 , 0},
-            { 0, 1 , 0}
+            { 0, 1 , 0},
+            { 0, 0, 1}
         };
 
         Gd = new float[,]{ 
@@ -70,15 +73,87 @@ public class KalmanFilter : MonoBehaviour {
         };
 
         R = new float[,]{ 
+            { 702, 0, 0},
+            { 0, 702, 0},
+            { 0, 0, 0}
+        };
+    }
+
+    private void setVariablesExample()
+    {
+        Ts = 0.033f;
+        sigma_biege = 3f;
+        sigma_gyro = 0.5f;
+        sigma_offset = -7f;
+
+        Identity = new float[,] {
+            { 1, 0 },
+            { 0, 1 }
+        };
+
+        //Erster x-Eintrag
+        x0 = new float[,] {
+            { 0 },
+            { 0 }
+        };
+
+        P0 = new float[,]{
+            { 100, 0 },
+            { 0, 100 }
+        };
+
+        A = new float[,]{
+            { 0, -1 },
+            { 0, 0 },
+        };
+
+        Ad = mCalc.AddMatrix(A, Identity);
+
+        Bd = new float[,]{
+            {Ts},
+            {0},
+        };
+
+        C = new float[,]{
+            { 1, 0 },
+            { 0, 0 }
+        };
+
+        Gd = new float[,]{
+            { Ts, -Ts },
+            { 0, Ts }
+        };
+
+        Q = new float[,]{
+            { pow(sigma_gyro,2), 0},
+            { 0, pow(sigma_offset,2)}
+        };
+
+        R = new float[,]{
             { 702, 0},
-            { 0, 702}
+            { 0, 1000}
         };
     }
 
     void UseKalmanFilter()
     {
-        int N = 1;
-        float[,] xlast, x_priori, Plast, P_priori, S, Kn, test;
+        int N;
+        N = rCSV.CountLines();
+        N = 1;
+        float[,] xlast, x_priori, Plast, P_priori, S, Kn, x_post, yn, P_post; 
+        float[,] D = new float[,]
+            {
+                { 0},
+                { 1}
+            };
+        ;
+        float[,] Bd = new float[,]
+            {
+                { Ts},
+                { 0}
+            };
+        ;
+
         List<float[,]> 
             x = new List<float[,]>(),
             P = new List<float[,]>(),
@@ -95,37 +170,53 @@ public class KalmanFilter : MonoBehaviour {
                 xlast = x[n - 1]; Plast = P[n - 1];
             }
 
-            //x_priori = Ad * xlast;
-            x_priori = mCalc.MultiplyMatrix(Ad, xlast);                          //+ Bd * yn[1]
+            string[] values = rCSV.GetLineValues(n+1);
+            yn = new float[,]{
+                { 1.63657704f},
+                {float.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture)}
+            };
+            mCalc.printMatrix(yn);
 
+            //x_priori = Ad * xlast; //+ Bd * yn[1]
+            x_priori = mCalc.AddMatrix( 
+                mCalc.MultiplyMatrix(Ad, xlast), mCalc.MultiplyMatrixWithScalar(Bd, yn[1, 0])
+            );                         
             //P_priori = Ad * Plast * Ad.T + Gd * Q * Gd.T
             P_priori = mCalc.AddMatrix(
                 mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(Ad, Plast), mCalc.Transpose(Ad)),
                 mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(Gd, Q), mCalc.Transpose(Gd))
             );
-
             //S = C * P_priori * C.T + R
             S = mCalc.AddMatrix(
                 mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(C, P_priori),mCalc.Transpose(C)),
                 R
             );
-
             //Kn = P_priori * C.T * linalg.pinv(S)
-            //Kn = mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(P_priori,mCalc.Transpose(C),);
+            Kn = mCalc.MultiplyMatrix(
+                mCalc.MultiplyMatrix(P_priori, mCalc.Transpose(C)), mCalc.InvertMatrix(S)
+            );
+
             //x_post = x_priori + Kn * (yn - C * x_priori         // - D * y[n, 1])
+            float u = yn[1, 0];
+            float[,] D_mul_u = mCalc.MultiplyMatrixWithScalar(D, u);
+            float[,] C_mul_xpriori = mCalc.MultiplyMatrix(C, x_priori);
+
+            x_post = mCalc.AddMatrix(
+                x_priori,
+                mCalc.MultiplyMatrix(Kn,
+                    mCalc.SubMatrix((mCalc.SubMatrix(yn, C_mul_xpriori)),D_mul_u)
+                )
+            );
+
             //P_post = (np.eye(2) - Kn * C) * P_priori
+            P_post = mCalc.MultiplyMatrix(mCalc.SubMatrix(Identity, mCalc.MultiplyMatrix(Kn, C)),P_priori);
 
 
-            //x.append(x_post)
-            //P.append(P_post)
-            //K.append(Kn)
-            //Gd = ;
-            //mCalc.printMatrix(Gd);
-            //mCalc.printMatrix(R);
-            mCalc.printMatrix(S);
-            mCalc.printMatrix(mCalc.InvertMatrix(S));
-            mCalc.printMatrix(mCalc.MultiplyMatrix(S, mCalc.InvertMatrix(S)));
-            
+            mCalc.printMatrix(x_post);
+            mCalc.printMatrix(P_post);
+            x.Add(x_post);
+            P.Add(P_post);
+            K.Add(Kn);
         }
 
 

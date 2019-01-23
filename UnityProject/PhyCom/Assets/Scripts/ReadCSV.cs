@@ -12,26 +12,34 @@ public class ReadCSV : MonoBehaviour
     private string[] lineHeader;
     private float x;
 
-    void Start()
+    void Awake()
     {
+        fieldSeperater = ",";
         path = Application.dataPath + "/SavedData.csv";
+        path = Application.dataPath + "/drehung1_daten.csv";
         fileData = System.IO.File.ReadAllText(path);
         lines = fileData.Split("\n"[0]);
         lineHeader = (lines[0].Trim()).Split(fieldSeperater[0]);
-        printLine(0);
-        
+        PrintLine(0);
+        PrintLine(1);
+
     }
 
-    private void printLine(int index)
+    public int CountLines()
+    {
+        return lines.GetLength(0);
+    }
+
+    private void PrintLine(int index)
     {
         string output = string.Join(", ",
-             new List<string>(getLineValues(index))
+             new List<string>(GetLineValues(index))
              .ConvertAll(i => i.ToString())
              .ToArray());
         Debug.Log(output);
     }
 
-    public string[] getLineValues(int index)
+    public string[] GetLineValues(int index)
     {
         string[] line = (lines[index].Trim()).Split(fieldSeperater[0]);
         return line;

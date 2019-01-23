@@ -17,7 +17,8 @@ public class MatrixCalc : MonoBehaviour {
         {
             for (int j = 0; j < colLength; j++)
             {
-                line += decimal.Parse((arr[i, j]).ToString(), NumberStyles.Float) + " ";
+                //line += decimal.Parse((arr[i, j]).ToString(), NumberStyles.Float) + " ";
+                line += arr[i, j] + " ";
             }
             line += System.Environment.NewLine;
         }
@@ -52,6 +53,22 @@ public class MatrixCalc : MonoBehaviour {
                 }
             }
             return kHasil;
+        }
+        return kHasil;
+    }
+
+    public float[,] MultiplyMatrixWithScalar(float[,] A, float B)
+    {
+        int rA = A.GetLength(0);
+        int cA = A.GetLength(1);
+        float temp = 0;
+        float[,] kHasil = new float[rA, cA];
+        for (int i = 0; i < rA; i++)
+        {
+            for (int k = 0; k < cA; k++)
+            {
+                kHasil[i, k] += A[i, k] * B;
+            }
         }
         return kHasil;
     }
@@ -155,7 +172,7 @@ public class MatrixCalc : MonoBehaviour {
         return x;
     }
 
-    public Tuple<float[,], int[]> LUPDecomposition(float[,] A)
+    private Tuple<float[,], int[]> LUPDecomposition(float[,] A)
     {
         /*
         * Perform LUP decomposition on a matrix A.
@@ -204,10 +221,11 @@ public class MatrixCalc : MonoBehaviour {
                     kp = i;
                 }
             }
+            /*
             if (p == 0)
             {
                 throw new Exception("singular matrix");
-            }
+            }*/
             /*
             * These lines update the pivot array (which represents the pivot matrix)
             * by exchanging pi[k] and pi[kp].
@@ -243,7 +261,7 @@ public class MatrixCalc : MonoBehaviour {
         return Tuple.Create(A, pi);
     }
 
-    public float[] LUPSolve(float[,] LU, int[] pi, float[] b)
+    private float[] LUPSolve(float[,] LU, int[] pi, float[] b)
     {
         /*
         * Given L,U,P and b solve for x.
