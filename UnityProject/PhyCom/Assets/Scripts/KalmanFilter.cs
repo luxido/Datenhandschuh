@@ -7,16 +7,24 @@ public class KalmanFilter : MonoBehaviour {
 
     private MatrixCalc mCalc;
     private ReadCSV rCSV;
+    public GameObject unfiltered;
+    public GameObject filtered;
     //Ts -> TaktRate
-    public float Ts = 0.102f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = -7f;
+    public float Ts = 0.033f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = -7f;
+    private List<float[,]>
+            x = new List<float[,]>(),
+            P = new List<float[,]>(),
+            K = new List<float[,]>();
 
     //float[,] x = {Winkel(Biege & ausGyro errechnet), Winkelgeschwindigkeit(Gyro), Offset(Gyro) }   
     private float[,] x0, P0, A, Ad, C, Gd, Q, R, Identity, Bd;
 
     void Start () {
         mCalc = gameObject.AddComponent<MatrixCalc>();
-        rCSV = gameObject.AddComponent<ReadCSV>(); 
-        UseKalmanFilter();
+        //rCSV = gameObject.AddComponent<ReadCSV>();
+        filtered = GameObject.Find("filtered");
+        unfiltered = GameObject.Find("unfiltered");
+        //UseKalmanFilter();
     }
 
     private void setVariables()
@@ -288,11 +296,74 @@ public class KalmanFilter : MonoBehaviour {
         mCalc.printMatrix(P[480]);
     }
 
-    public int FlexSensorToRad(int flexSensorValue)
+    public void UseKalmanFilterLive(int n, string[] values)
     {
-        float radValue = (flexSensorValue - 650) * 9/10; 
+        setVariables();
+        float[,] xlast, x_priori, Plast, P_priori, S, Kn, x_post, yn, P_post;
 
-        return (int)radValue;
+        if (n == 0)
+        {
+            xlast = x0; Plast = P0;
+        }
+        else
+        {
+            xlast = x[n - 1]; Plast = P[n - 1];
+        }
+
+        float angle = FlexSensorToRad(float.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture));
+        yn = new float[,]{
+            {angle},
+            {float.Parse(values[2], System.Globalization.CultureInfo.InvariantCulture)}
+        };
+
+        //x_priori = Ad * xlast; //+ Bd * yn[1]
+        x_priori = mCalc.MultiplyMatrix(Ad, xlast);
+        //P_priori = Ad * Plast * Ad.T + Gd * Q * Gd.T
+        P_priori = mCalc.AddMatrix(
+            mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(Ad, Plast), mCalc.Transpose(Ad)),
+            mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(Gd, Q), mCalc.Transpose(Gd))
+        );
+        //S = C * P_priori * C.T + R
+        S = mCalc.AddMatrix(
+            mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(C, P_priori), mCalc.Transpose(C)),
+            R
+        );
+        //Kn = P_priori * C.T * linalg.pinv(S)
+        Kn = mCalc.MultiplyMatrix(
+            mCalc.MultiplyMatrix(P_priori, mCalc.Transpose(C)), mCalc.InvertMatrix(S)
+        );
+
+        //x_post = x_priori + Kn * (yn - C * x_priori         // - D * y[n, 1])
+        float[,] C_mul_xpriori = mCalc.MultiplyMatrix(C, x_priori);
+        x_post = mCalc.AddMatrix(
+            x_priori,
+            mCalc.MultiplyMatrix(Kn,
+                (mCalc.SubMatrix(yn, C_mul_xpriori))
+            )
+        );
+
+
+        //P_post = (np.eye(2) - Kn * C) * P_priori
+        P_post = mCalc.MultiplyMatrix(mCalc.SubMatrix(Identity, mCalc.MultiplyMatrix(Kn, C)), P_priori);
+        //Debug.Log("yn");
+        //mCalc.printMatrix(yn);
+        //Debug.Log("Xpost");
+        //mCalc.printMatrix(x_post);
+        //mCalc.printMatrix(P_post);
+        x.Add(x_post);
+        P.Add(P_post);
+        K.Add(Kn);
+
+        unfiltered.transform.eulerAngles = new Vector3(angle, 0, 0);
+        filtered.transform.eulerAngles = new Vector3(x_post[0,0], 0, 0);
+    }
+
+    public float FlexSensorToRad(float flexSensorValue)
+    {
+        //flexOffsetValue kann noch berechnet werden
+        int flexOffsetValue = 650;
+        float radValue = (flexSensorValue - flexOffsetValue) * 9/10; 
+        return radValue;
     }
 
     private static float pow(float f, int p)
