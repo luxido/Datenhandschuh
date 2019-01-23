@@ -137,22 +137,23 @@ public class KalmanFilter : MonoBehaviour {
 
     void UseKalmanFilter()
     {
-        int N;
-        N = rCSV.CountLines();
-        N = 1;
+        int N, 
+            gyroX_index = rCSV.GetIndexOf("GyroX"), 
+            accY_index = rCSV.GetIndexOf("AccY"), 
+            accZ_index = rCSV.GetIndexOf("AccZ");
+        //-2 not -1 because of the header
+        N = rCSV.CountLines()-2;
         float[,] xlast, x_priori, Plast, P_priori, S, Kn, x_post, yn, P_post; 
         float[,] D = new float[,]
             {
                 { 0},
                 { 1}
-            };
-        ;
+            };;
         float[,] Bd = new float[,]
             {
                 { Ts},
                 { 0}
-            };
-        ;
+            };;
 
         List<float[,]> 
             x = new List<float[,]>(),
@@ -170,12 +171,14 @@ public class KalmanFilter : MonoBehaviour {
                 xlast = x[n - 1]; Plast = P[n - 1];
             }
 
-            string[] values = rCSV.GetLineValues(n+1);
+            //+1 because of the header
+            string[] values = rCSV.GetLineValues(n + 1);
+            float accY = float.Parse(values[accY_index], System.Globalization.CultureInfo.InvariantCulture);
+            float accZ = float.Parse(values[accZ_index], System.Globalization.CultureInfo.InvariantCulture);
             yn = new float[,]{
-                { 1.63657704f},
-                {float.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture)}
+                {mCalc.calcAngle(accY, accZ)},
+                {float.Parse(values[gyroX_index], System.Globalization.CultureInfo.InvariantCulture)}
             };
-            mCalc.printMatrix(yn);
 
             //x_priori = Ad * xlast; //+ Bd * yn[1]
             x_priori = mCalc.AddMatrix( 
@@ -200,7 +203,6 @@ public class KalmanFilter : MonoBehaviour {
             float u = yn[1, 0];
             float[,] D_mul_u = mCalc.MultiplyMatrixWithScalar(D, u);
             float[,] C_mul_xpriori = mCalc.MultiplyMatrix(C, x_priori);
-
             x_post = mCalc.AddMatrix(
                 x_priori,
                 mCalc.MultiplyMatrix(Kn,
@@ -211,15 +213,12 @@ public class KalmanFilter : MonoBehaviour {
             //P_post = (np.eye(2) - Kn * C) * P_priori
             P_post = mCalc.MultiplyMatrix(mCalc.SubMatrix(Identity, mCalc.MultiplyMatrix(Kn, C)),P_priori);
 
-
-            mCalc.printMatrix(x_post);
-            mCalc.printMatrix(P_post);
             x.Add(x_post);
             P.Add(P_post);
             K.Add(Kn);
         }
-
-
+        mCalc.printMatrix(x[480]);
+        mCalc.printMatrix(P[480]);
     }
 
     private static float pow(float f, int p)

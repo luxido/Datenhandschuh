@@ -45,6 +45,20 @@ public class ReadCSV : MonoBehaviour
         return line;
     }
 
+    public int GetIndexOf(string name)
+    {
+        int index = 0;
+        for (int i = 0; i < lineHeader.Length; i++)
+        {
+            if (lineHeader[i].Equals(name))
+            {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
     // Update is called once per frame
     void Update()
     {
