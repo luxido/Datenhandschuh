@@ -42,7 +42,7 @@ void setup()
   Wire.write(0x1C);
   Wire.write(0b00000000);
   Wire.endTransmission(); 
-  Serial.begin (9600); // Start der seriellen Verbindung für den serial monitor.
+  Serial.begin (115200); // Start der seriellen Verbindung für den serial monitor.
 }
 
 struct SFloatRawData {unsigned long t; int flex6; double ax, ay, az, gx, gy, gz;};
@@ -51,14 +51,14 @@ void loop()
 {
   GetMpuValue(MPU1);
 
-  delay(100); // Wartezeit zwischen den einzelnen Ausgaben der Sensorwerte
+  delay(33); // Wartezeit zwischen den einzelnen Ausgaben der Sensorwerte
 }
 
 void printCSVData(struct SFloatRawData fdata) {
     static bool printHeader = true;
     if (printHeader) {
         //Serial.println("time,Flex6,GyroX,GyroY,GyroZ,AccX,AccY,AccZ");
-        Serial.println("time,Flex6,GyroY");
+        Serial.println("time;Flex6;GyroY");
         printHeader = false;
     }
     Serial.print(fdata.t);  Serial.print(";");
