@@ -5,26 +5,33 @@ using UnityEngine;
 
 public class KalmanFilter : MonoBehaviour {
 
-    private MatrixCalc mCalc;
-    private ReadCSV rCSV;
     public GameObject unfiltered;
     public GameObject filtered;
     //Ts -> TaktRate
     public float Ts = 0.033f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = -7f;
+
+    private MatrixCalc mCalc;
     private List<float[,]>
-            x = new List<float[,]>(),
-            P = new List<float[,]>(),
-            K = new List<float[,]>();
+        x = new List<float[,]>(),
+        P = new List<float[,]>(),
+        K = new List<float[,]>();
 
     //float[,] x = {Winkel(Biege & ausGyro errechnet), Winkelgeschwindigkeit(Gyro), Offset(Gyro) }   
     private float[,] x0, P0, A, Ad, C, Gd, Q, R, Identity, Bd;
+    private char lineSeperater = '\n';
+    private char fieldSeperater = ';';
+    private string outputFilenamePath;
+
 
     void Start () {
         mCalc = gameObject.AddComponent<MatrixCalc>();
-        //rCSV = gameObject.AddComponent<ReadCSV>();
         filtered = GameObject.Find("filtered");
         unfiltered = GameObject.Find("unfiltered");
-        //UseKalmanFilter();
+    }
+
+    public void init(string filenamePath)
+    {
+        outputFilenamePath = filenamePath;
     }
 
     private void setVariables()
@@ -134,81 +141,18 @@ public class KalmanFilter : MonoBehaviour {
         };
     }
 
-    void UseKalmanFilter()
+    public IEnumerator UseKFWithCSV(ReadCSV rCSV)
     {
-        setVariables();
-        int N,
-            gyroY_index = rCSV.GetIndexOf("GyroY"),
-            flex6_index = rCSV.GetIndexOf("Flex6");
         //-2 not -1 because of the header
-        N = rCSV.CountLines()-2;
-        float[,] xlast, x_priori, Plast, P_priori, S, Kn, x_post, yn, P_post; 
-
-        List<float[,]> 
-            x = new List<float[,]>(),
-            P = new List<float[,]>(),
-            K = new List<float[,]>();
-
+        int N = rCSV.CountLines() - 2;
         for (int n = 0; n < N; n++)
         {
-            if (n == 0)
-            {
-                xlast = x0; Plast = P0;
-            }
-            else
-            {
-                xlast = x[n - 1]; Plast = P[n - 1];
-            }
-
-            //+1 because of the header
-            string[] values = rCSV.GetLineValues(n + 1);
-            yn = new float[,]{
-                {float.Parse(values[flex6_index], System.Globalization.CultureInfo.InvariantCulture)},
-                {float.Parse(values[gyroY_index], System.Globalization.CultureInfo.InvariantCulture)}
-            };
-
-            //x_priori = Ad * xlast; //+ Bd * yn[1]
-            x_priori = mCalc.MultiplyMatrix(Ad, xlast);                         
-            //P_priori = Ad * Plast * Ad.T + Gd * Q * Gd.T
-            P_priori = mCalc.AddMatrix(
-                mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(Ad, Plast), mCalc.Transpose(Ad)),
-                mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(Gd, Q), mCalc.Transpose(Gd))
-            );
-            //S = C * P_priori * C.T + R
-            S = mCalc.AddMatrix(
-                mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(C, P_priori),mCalc.Transpose(C)),
-                R
-            );
-            //Kn = P_priori * C.T * linalg.pinv(S)
-            Kn = mCalc.MultiplyMatrix(
-                mCalc.MultiplyMatrix(P_priori, mCalc.Transpose(C)), mCalc.InvertMatrix(S)
-            );
-
-            //x_post = x_priori + Kn * (yn - C * x_priori         // - D * y[n, 1])
-            float[,] C_mul_xpriori = mCalc.MultiplyMatrix(C, x_priori);
-            x_post = mCalc.AddMatrix(
-                x_priori,
-                mCalc.MultiplyMatrix(Kn,
-                    (mCalc.SubMatrix(yn, C_mul_xpriori))
-                )
-            );
-            
-
-            //P_post = (np.eye(2) - Kn * C) * P_priori
-            P_post = mCalc.MultiplyMatrix(mCalc.SubMatrix(Identity, mCalc.MultiplyMatrix(Kn, C)),P_priori);
-            Debug.Log("yn");
-            mCalc.printMatrix(yn);
-            Debug.Log("Xpost");
-            mCalc.printMatrix(x_post);
-            //mCalc.printMatrix(P_post);
-            x.Add(x_post);
-            P.Add(P_post);
-            K.Add(Kn);
+            StartKalmanFilter(n, rCSV.GetLine(n));
+            yield return new WaitForSeconds(0.05f);
         }
-        //mCalc.printMatrix(x[5]);
-        //mCalc.printMatrix(P[5]);
     }
 
+    /*
     void UseKalmanFilterEdeler()
     {
         setVariablesExample();
@@ -295,22 +239,38 @@ public class KalmanFilter : MonoBehaviour {
         mCalc.printMatrix(x[480]);
         mCalc.printMatrix(P[480]);
     }
+    */
 
-    public void UseKalmanFilterLive(int n, string[] values)
+    public void StartKalmanFilter(int n, string msg)
+    {
+        string newMsg = msg;
+        if (n == 0)
+        {
+            newMsg += fieldSeperater + "angle" + fieldSeperater + "filteredAngle";
+        }
+        else if (n>0)
+        {
+            newMsg += fieldSeperater +  FilterStep(n, msg);
+        }
+        System.IO.File.AppendAllText(outputFilenamePath, newMsg + lineSeperater);
+
+    }
+
+    private string FilterStep(int n, string msg)
     {
         setVariables();
+        string[] values = msg.Split(fieldSeperater);
         float[,] xlast, x_priori, Plast, P_priori, S, Kn, x_post, yn, P_post;
-
-        if (n == 0)
+        if (n == 1)
         {
             xlast = x0; Plast = P0;
         }
         else
         {
-            xlast = x[n - 1]; Plast = P[n - 1];
+            xlast = x[n - 2]; Plast = P[n - 2];
         }
 
-        float angle = FlexSensorToRad(float.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture));
+        float angle = (float.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture));
         yn = new float[,]{
             {angle},
             {float.Parse(values[2], System.Globalization.CultureInfo.InvariantCulture)}
@@ -342,20 +302,27 @@ public class KalmanFilter : MonoBehaviour {
             )
         );
 
-
         //P_post = (np.eye(2) - Kn * C) * P_priori
         P_post = mCalc.MultiplyMatrix(mCalc.SubMatrix(Identity, mCalc.MultiplyMatrix(Kn, C)), P_priori);
-        //Debug.Log("yn");
-        //mCalc.printMatrix(yn);
-        //Debug.Log("Xpost");
-        //mCalc.printMatrix(x_post);
-        //mCalc.printMatrix(P_post);
+
         x.Add(x_post);
         P.Add(P_post);
         K.Add(Kn);
 
         unfiltered.transform.eulerAngles = new Vector3(angle, 0, 0);
-        filtered.transform.eulerAngles = new Vector3(x_post[0,0], 0, 0);
+        filtered.transform.eulerAngles = new Vector3(x_post[0, 0], 0, 0);
+
+        //Debug.Log(angle);
+        //Debug.Log(x_post[0, 0]);
+        //Debug.Log("yn");
+        //mCalc.printMatrix(yn);
+        //Debug.Log("Xpost");
+        //mCalc.printMatrix(x_post);
+        //mCalc.printMatrix(P_post);
+
+        return angle.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) 
+            + fieldSeperater 
+            + x_post[0, 0].ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     public float FlexSensorToRad(float flexSensorValue)

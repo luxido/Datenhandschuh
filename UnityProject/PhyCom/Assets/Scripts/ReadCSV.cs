@@ -1,29 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Text.RegularExpressions;
 
 public class ReadCSV : MonoBehaviour
 {
-    private string fieldSeperater = ";";
-    private string lineSeperater = "\n";
+    private char fieldSeperater = ';';  //or ','
+    private string lineSeperater = "\r\n";
     private string fileData;
     private string path;
-    private string [] lines;
+    private string[] lines;
     private string[] lineHeader;
     private float x;
 
-    void Awake()
+    public void init(string path)
     {
-        fieldSeperater = ";";
-        //fieldSeperater = ",";
-        path = Application.dataPath + "/SavedData_BiegeUndRing.csv";
-        //path = Application.dataPath + "/drehung1_daten.csv";
         fileData = System.IO.File.ReadAllText(path);
-        lines = fileData.Split("\n"[0]);
-        lineHeader = (lines[0].Trim()).Split(fieldSeperater[0]);
+        //lines = fileData.Split(lineSeperater);
+        lines = Regex.Split(fileData, lineSeperater);
+        lineHeader = (lines[0].Trim()).Split(fieldSeperater);
         //print header
         PrintLine(0);
-
     }
 
     public int CountLines()
@@ -34,16 +31,21 @@ public class ReadCSV : MonoBehaviour
     private void PrintLine(int index)
     {
         string output = string.Join(", ",
-             new List<string>(GetLineValues(index))
+             new List<string>(GetLineValues(GetLine(index)))
              .ConvertAll(i => i.ToString())
              .ToArray());
         Debug.Log(output);
     }
 
-    public string[] GetLineValues(int index)
+    public string[] GetLineValues(string line)
     {
-        string[] line = (lines[index].Trim()).Split(fieldSeperater[0]);
-        return line;
+        string[] values = line.Split(fieldSeperater);
+        return values;
+    }
+
+    public string GetLine(int index)
+    {
+        return lines[index];
     }
 
     public int GetIndexOf(string name)
@@ -58,11 +60,5 @@ public class ReadCSV : MonoBehaviour
             }
         }
         return index;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

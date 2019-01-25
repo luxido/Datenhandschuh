@@ -17,24 +17,17 @@ using System;
  */
 public class SampleMessageListener : MonoBehaviour
 {
-    private char lineSeperater = '\n';
-    private char fieldSeperater = ';';
-    private int n = 0;
-    public KalmanFilter kFilter;
+    private SceneController SceneControllerScript;
 
-    private void Start()
+    public void init(SceneController script)
     {
-        kFilter = gameObject.AddComponent<KalmanFilter>();
+        SceneControllerScript = script;
     }
+
     // Invoked when a line of data is received from the serial device.
     void OnMessageArrived(string msg)
     {
-
-        string[] words = msg.Split(';');
-        kFilter.UseKalmanFilterLive(n, words);
-        n++;
-        //Debug.Log(msg);
-        //System.IO.File.AppendAllText(Application.dataPath + "/SavedData.csv", msg + lineSeperater);
+        SceneControllerScript.UseKalmanFilterLive(msg);
     }
 
     // Invoked when a connect/disconnect event occurs. The parameter 'success'
