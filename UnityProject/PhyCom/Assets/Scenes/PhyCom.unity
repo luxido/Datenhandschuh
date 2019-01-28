@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -338,7 +338,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11442534, guid: a65acf0cbf56b80419f74ebf0bc845f4, type: 3}
       propertyPath: portName
-      value: COM4
+      value: COM5
       objectReference: {fileID: 0}
     - target: {fileID: 11442534, guid: a65acf0cbf56b80419f74ebf0bc845f4, type: 3}
       propertyPath: baudRate
@@ -681,12 +681,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 623df04447ce768458cc02011cf94f50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectMode: 1
+  selectMode: 0
   SerialController: {fileID: 1975653665}
   MessageListener: {fileID: 1032064152}
   KalmanFilterScript: {fileID: 1581414860}
   ReadCSVScript: {fileID: 1581414859}
-  inputFileName: SavedData_BiegeUndRing.csv
+  inputFileName: ruhezustand.csv
   outputFileName: FilteredData.csv
 --- !u!114 &1581414859
 MonoBehaviour:
@@ -715,7 +715,7 @@ MonoBehaviour:
   unfiltered: {fileID: 1549970369}
   filtered: {fileID: 1989204358}
   Ts: 0.102
-  sigma_biege: 0
+  sigma_biege: 40
   sigma_gyro: 0.5
   sigma_offset: -7
 --- !u!1 &1695500071

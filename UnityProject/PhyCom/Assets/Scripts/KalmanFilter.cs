@@ -8,7 +8,7 @@ public class KalmanFilter : MonoBehaviour {
     public GameObject unfiltered;
     public GameObject filtered;
     //Ts -> TaktRate
-    public float Ts = 0.033f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = -7f;
+    public float Ts = 0.033f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = 3f;
 
     private MatrixCalc mCalc;
     private List<float[,]>
@@ -80,8 +80,8 @@ public class KalmanFilter : MonoBehaviour {
         };
 
         R = new float[,]{ 
-            { 702, 0},
-            { 0, 702}
+            { 12, 0},
+            { 0, 29}
         };
     }
 
@@ -148,7 +148,7 @@ public class KalmanFilter : MonoBehaviour {
         for (int n = 0; n < N; n++)
         {
             StartKalmanFilter(n, rCSV.GetLine(n));
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(Ts);
         }
     }
 
@@ -270,7 +270,7 @@ public class KalmanFilter : MonoBehaviour {
             xlast = x[n - 2]; Plast = P[n - 2];
         }
 
-        float angle = (float.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture));
+        float angle = FlexSensorToRad(float.Parse(values[1], System.Globalization.CultureInfo.InvariantCulture));
         yn = new float[,]{
             {angle},
             {float.Parse(values[2], System.Globalization.CultureInfo.InvariantCulture)}
@@ -336,6 +336,42 @@ public class KalmanFilter : MonoBehaviour {
     private static float pow(float f, int p)
     {
         float result = (float)Math.Pow(f, p);
+        return result;
+    }
+
+    public float calculateMean(float[] data)
+    {
+        float result = 0;
+
+        for(int i = 0; i < data.Length; i++)
+        {
+            result += data[i];
+        }
+
+        result /= data.Length;
+
+        return result;
+    }
+
+    public float calculateStd(float[] data)
+    {
+        float result = 0;
+        result = (float)Math.Sqrt(calculateVariance(data));
+        return result;
+    }
+
+    public float calculateVariance(float[] data)
+    {
+        float result = 0;
+        float mean = calculateMean(data);
+
+        for (int i = 0; i < data.Length; i++)
+        {
+            result += pow(data[i] - mean, 2);
+        }
+
+        result /= data.Length;
+
         return result;
     }
 }

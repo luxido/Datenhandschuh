@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 public class ReadCSV : MonoBehaviour
 {
     private char fieldSeperater = ';';  //or ','
-    private string lineSeperater = "\r\n";
+    private string lineSeperater = "\n";    //"\r\n"
     private string fileData;
     private string path;
     private string[] lines;
@@ -60,5 +60,17 @@ public class ReadCSV : MonoBehaviour
             }
         }
         return index;
+    }
+
+    public float[] GetValuesToArray(string name, int start, int end)
+    {
+        float[] arr = new float[end-start];
+        int index = GetIndexOf(name);
+        for(int i = 0; i < arr.Length; i++)
+        {
+            arr[i] = float.Parse(GetLineValues(lines[i+start])[index],
+                System.Globalization.CultureInfo.InvariantCulture);
+        }
+        return arr;
     }
 }
