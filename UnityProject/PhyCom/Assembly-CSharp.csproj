@@ -75,6 +75,7 @@
     <Compile Include="Assets\Scripts\MatrixCalc.cs" />
     <Compile Include="Assets\Scripts\ReadCSV.cs" />
     <Compile Include="Assets\Scripts\SceneController.cs" />
+    <Compile Include="Assets\Scripts\Visualization.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/MasterDR/PhysicalComputing/REPO/UnityProject/PhyCom/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>

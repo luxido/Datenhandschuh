@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class KalmanFilter : MonoBehaviour {
 
-    public GameObject unfiltered;
+    public GameObject unfilteredBiege;
+    public GameObject unfilteredGyro;
     public GameObject filtered;
     //Ts -> TaktRate
     public float Ts = 0.033f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = 3f;
@@ -15,6 +16,8 @@ public class KalmanFilter : MonoBehaviour {
         x = new List<float[,]>(),
         P = new List<float[,]>(),
         K = new List<float[,]>();
+    private float xGyroNew = 0;
+    private List<float> xGyro = new List<float>();
 
     //float[,] x = {Winkel(Biege & ausGyro errechnet), Winkelgeschwindigkeit(Gyro), Offset(Gyro) }   
     private float[,] x0, P0, A, Ad, C, Gd, Q, R, Identity, Bd;
@@ -25,8 +28,6 @@ public class KalmanFilter : MonoBehaviour {
 
     void Start () {
         mCalc = gameObject.AddComponent<MatrixCalc>();
-        filtered = GameObject.Find("filtered");
-        unfiltered = GameObject.Find("unfiltered");
     }
 
     public void init(string filenamePath)
@@ -261,6 +262,7 @@ public class KalmanFilter : MonoBehaviour {
         setVariables();
         string[] values = msg.Split(fieldSeperater);
         float[,] xlast, x_priori, Plast, P_priori, S, Kn, x_post, yn, P_post;
+
         if (n == 1)
         {
             xlast = x0; Plast = P0;
@@ -308,8 +310,10 @@ public class KalmanFilter : MonoBehaviour {
         x.Add(x_post);
         P.Add(P_post);
         K.Add(Kn);
-
-        unfiltered.transform.eulerAngles = new Vector3(angle, 0, 0);
+        xGyro.Add(yn[1, 0]); // ZU EDELER !!! RAUSCHEN NACH VORNE ZU GROß
+    
+        unfilteredBiege.transform.eulerAngles = new Vector3(angle, 0, 0);
+        unfilteredGyro.transform.eulerAngles = new Vector3(cumSum(xGyro)*Ts, 0, 0);
         filtered.transform.eulerAngles = new Vector3(x_post[0, 0], 0, 0);
 
         //Debug.Log(angle);
@@ -373,5 +377,15 @@ public class KalmanFilter : MonoBehaviour {
         result /= data.Length;
 
         return result;
+    }
+
+    private float cumSum(List<float> list)
+    {
+        float cumSum = 0f;
+        foreach (float value in list)
+        {
+            cumSum += value;
+        }
+        return cumSum;
     }
 }
