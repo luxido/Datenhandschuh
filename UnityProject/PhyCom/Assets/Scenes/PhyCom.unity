@@ -1794,7 +1794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 623df04447ce768458cc02011cf94f50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectMode: 0
+  selectMode: 1
   SerialController: {fileID: 1975653665}
   MessageListener: {fileID: 1032064152}
   KalmanFilterScript: {fileID: 1581414860}
