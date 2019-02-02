@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 public class ReadCSV : MonoBehaviour
 {
     private char fieldSeperater = ';';  //or ','
-    private string lineSeperater = "\n";    //"\r\n"
+    private string lineSeperater = "\r\n";    //"\r\n"
     private string fileData;
     private string path;
     private string[] lines;
