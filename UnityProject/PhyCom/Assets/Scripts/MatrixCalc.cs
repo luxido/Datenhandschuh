@@ -25,7 +25,9 @@ public class MatrixCalc : MonoBehaviour {
         Debug.Log(line);
     }
 
-    //modified from  https://stackoverflow.com/questions/6311309/how-can-i-multiply-two-matrices-in-c
+    /*Methode zur Matrizenmultiplizierung
+     * modified from  https://stackoverflow.com/questions/6311309/how-can-i-multiply-two-matrices-in-c
+     * */
     public float[,] MultiplyMatrix(float[,] A, float[,] B)
     {
         int rA = A.GetLength(0);
@@ -57,6 +59,7 @@ public class MatrixCalc : MonoBehaviour {
         return kHasil;
     }
 
+    //Methode zur Multiplizierung einer Matrix mit einem Skalar
     public float[,] MultiplyMatrixWithScalar(float[,] A, float B)
     {
         int rA = A.GetLength(0);
@@ -72,7 +75,9 @@ public class MatrixCalc : MonoBehaviour {
         return kHasil;
     }
 
-    //modified from  https://stackoverflow.com/questions/29483660/how-to-transpose-matrix
+    /*Methode zur Transponierung einer Matrix
+     * modified from  https://stackoverflow.com/questions/29483660/how-to-transpose-matrix
+     * */
     public float[,] Transpose(float[,] matrix)
     {
         int w = matrix.GetLength(0);
@@ -91,7 +96,9 @@ public class MatrixCalc : MonoBehaviour {
         return result;
     }
 
-    //modified from  http://programmertech.com/program/csharp/csharp-program-add-two-matrix
+    /*Methode zur Matrizenaddition
+     * modified from  http://programmertech.com/program/csharp/csharp-program-add-two-matrix
+     * */
     public float[,] AddMatrix(float[,] matrix1, float[,] matrix2)
     {
         float[,] addition = null;
@@ -113,6 +120,7 @@ public class MatrixCalc : MonoBehaviour {
         return addition;
     }
 
+    //Methode zur Matrizensubtraktion
     public float[,] SubMatrix(float[,] matrix1, float[,] matrix2)
     {
         float[,] addition = null;
@@ -134,6 +142,7 @@ public class MatrixCalc : MonoBehaviour {
         return addition;
     }
 
+    //NOTWENDIG FÜR EDELERS FILTER ZUM TEST nicht für unseren
     public float calcAngle(float a, float b)
     {
         double radians, angle;
@@ -142,7 +151,9 @@ public class MatrixCalc : MonoBehaviour {
         return (float)angle;
     }
 
-    //modified from http://www.rkinteractive.com/blogs/SoftwareDevelopment/post/2013/05/21/Algorithms-In-C-Finding-The-Inverse-Of-A-Matrix.aspx
+    /*Methode zur Invertierung einer Matrix
+     * modified from http://www.rkinteractive.com/blogs/SoftwareDevelopment/post/2013/05/21/Algorithms-In-C-Finding-The-Inverse-Of-A-Matrix.aspx
+     * */
     public float[,] InvertMatrix(float[,] A)
     {
         float[,] Stemp = A.Clone() as float[,];
@@ -156,7 +167,7 @@ public class MatrixCalc : MonoBehaviour {
         * solve will contain the vector solution for the LUP decomposition as we solve
         * for each vector of x.  We will combine the solutions into the float[,] array x.
         * */
-        float[] solve;
+    float[] solve;
 
         //Get the LU matrix and P matrix (as an array)
         Tuple<float[,], int[]> results = LUPDecomposition(Stemp);
@@ -179,6 +190,7 @@ public class MatrixCalc : MonoBehaviour {
         return x;
     }
 
+    //
     private Tuple<float[,], int[]> LUPDecomposition(float[,] A)
     {
         /*

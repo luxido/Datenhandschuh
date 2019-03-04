@@ -5,10 +5,13 @@ using UnityEngine;
 
 public class KalmanFilter : MonoBehaviour {
 
+    //Deklarierung der Gameobjects zur Darstellung der Werte des Biegesensors, des Gyrosensors und der mit dem Kalman-Filter gefilterten Fusionierung beider Sensorenwerte
     public GameObject unfilteredBiege;
     public GameObject unfilteredGyro;
     public GameObject filtered;
     //Ts -> TaktRate
+    
+    //Initialiesierung der Taktrate, sowie der Sigma-Werte vom Biegesensor, Gyrosensor und dessen Offset
     public float Ts = 0.033f, sigma_biege = 3f, sigma_gyro = 0.5f, sigma_offset = 3f;
 
     private MatrixCalc mCalc;
@@ -19,8 +22,11 @@ public class KalmanFilter : MonoBehaviour {
     private float xGyroNew = 0;
     private List<float> xGyro = new List<float>();
 
-    //float[,] x = {Winkel(Biege & ausGyro errechnet), Winkelgeschwindigkeit(Gyro), Offset(Gyro) }   
+    //float[,] x = {Winkel(Biege & ausGyro errechnet), Winkelgeschwindigkeit(Gyro), Offset(Gyro) }  
+    
+    //Deklarierung aller für den Kalman-Filter notwendigen Vektoren und Matrizen sowie des Einheitsvektors
     private float[,] x0, P0, A, Ad, C, Gd, Q, R, Identity, Bd;
+
     private char lineSeperater = '\n';
     private char fieldSeperater = ';';
     private string outputFilenamePath;
@@ -35,6 +41,7 @@ public class KalmanFilter : MonoBehaviour {
         outputFilenamePath = filenamePath;
     }
 
+    //Instanzieren aller für den Kalman-Filter notwendigen deklarierten Variabeln
     private void setVariables()
     {
         Identity = new float[,] { 
@@ -142,6 +149,7 @@ public class KalmanFilter : MonoBehaviour {
         };
     }
 
+    //Auslesen von Werten einer Zeiler aus einer CSV Datei und anschließender Anwendung des Kalman-Filters
     public IEnumerator UseKFWithCSV(ReadCSV rCSV)
     {
         //-2 not -1 because of the header
@@ -242,6 +250,7 @@ public class KalmanFilter : MonoBehaviour {
     }
     */
 
+    //Methode zur Ausführung eines Kalman-Filter Schrittes und gleichzeitiges schreiben der Filterung in eine CSV
     public void StartKalmanFilter(int n, string msg)
     {
         string newMsg = msg;
@@ -257,16 +266,19 @@ public class KalmanFilter : MonoBehaviour {
 
     }
 
+    //Kalman-Filter Schritt Definition
     private string FilterStep(int n, string msg)
     {
         setVariables();
         string[] values = msg.Split(fieldSeperater);
         float[,] xlast, x_priori, Plast, P_priori, S, Kn, x_post, yn, P_post;
 
+        //Bei erstmaligem anwenden des Filters werden Startwerte genutzt 
         if (n == 1)
         {
             xlast = x0; Plast = P0;
         }
+        //Nutzen der gefilterten Werte aus dem letzten Schritt
         else
         {
             xlast = x[n - 2]; Plast = P[n - 2];
@@ -277,6 +289,8 @@ public class KalmanFilter : MonoBehaviour {
             {angle},
             {float.Parse(values[2], System.Globalization.CultureInfo.InvariantCulture)}
         };
+
+        //Ausführung der Formeln für den Kalman-Filter
 
         //x_priori = Ad * xlast; //+ Bd * yn[1]
         x_priori = mCalc.MultiplyMatrix(Ad, xlast);
@@ -312,6 +326,7 @@ public class KalmanFilter : MonoBehaviour {
         K.Add(Kn);
         xGyro.Add(yn[1, 0]); // ZU EDELER !!! RAUSCHEN NACH VORNE ZU GROß
     
+        //Setzen der Winkel der Gameobjects zur Darstellung der eben gefilterten Werte
         unfilteredBiege.transform.eulerAngles = new Vector3(angle, 0, 0);
         unfilteredGyro.transform.eulerAngles = new Vector3(cumSum(xGyro)*Ts, 0, 0);
         filtered.transform.eulerAngles = new Vector3(x_post[0, 0], 0, 0);
@@ -329,6 +344,7 @@ public class KalmanFilter : MonoBehaviour {
             + x_post[0, 0].ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
     }
 
+    //Methode zur Umrechnung der Flexsensor-Werte in einen Zahlenbereich zwischen ~ 0-90 
     public float FlexSensorToRad(float flexSensorValue)
     {
         //flexOffsetValue kann noch berechnet werden
@@ -343,6 +359,7 @@ public class KalmanFilter : MonoBehaviour {
         return result;
     }
 
+    //Methode zur Berechnung des Mittelwerts
     public float calculateMean(float[] data)
     {
         float result = 0;
@@ -357,6 +374,7 @@ public class KalmanFilter : MonoBehaviour {
         return result;
     }
 
+    //Methode zur Berechnung der Standardabweichung
     public float calculateStd(float[] data)
     {
         float result = 0;
@@ -364,6 +382,7 @@ public class KalmanFilter : MonoBehaviour {
         return result;
     }
 
+    //Methode zur Berechnung der Variance
     public float calculateVariance(float[] data)
     {
         float result = 0;
@@ -379,6 +398,7 @@ public class KalmanFilter : MonoBehaviour {
         return result;
     }
 
+    //Methode zur Berechnung der kummulierten Summe von Werten einer Liste
     private float cumSum(List<float> list)
     {
         float cumSum = 0f;
