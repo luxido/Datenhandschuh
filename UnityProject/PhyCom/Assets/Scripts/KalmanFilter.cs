@@ -161,102 +161,13 @@ public class KalmanFilter : MonoBehaviour {
         }
     }
 
-    /*
-    void UseKalmanFilterEdeler()
-    {
-        setVariablesExample();
-        int N,
-            gyroX_index = rCSV.GetIndexOf("GyroX"),
-            accY_index = rCSV.GetIndexOf("AccY"),
-            accZ_index = rCSV.GetIndexOf("AccZ");
-        //-2 not -1 because of the header
-        N = rCSV.CountLines() - 2;
-        float[,] xlast, x_priori, Plast, P_priori, S, Kn, x_post, yn, P_post;
-        float[,] D = new float[,]
-            {
-                { 0},
-                { 1}
-            }; ;
-        float[,] Bd = new float[,]
-            {
-                { Ts},
-                { 0}
-            }; ;
-
-        List<float[,]>
-            x = new List<float[,]>(),
-            P = new List<float[,]>(),
-            K = new List<float[,]>();
-
-        for (int n = 0; n < N; n++)
-        {
-            if (n == 0)
-            {
-                xlast = x0; Plast = P0;
-            }
-            else
-            {
-                xlast = x[n - 1]; Plast = P[n - 1];
-            }
-
-            //+1 because of the header
-            string[] values = rCSV.GetLineValues(n + 1);
-            float accY = float.Parse(values[accY_index], System.Globalization.CultureInfo.InvariantCulture);
-            float accZ = float.Parse(values[accZ_index], System.Globalization.CultureInfo.InvariantCulture);
-            yn = new float[,]{
-                {mCalc.calcAngle(accY, accZ)},
-                {float.Parse(values[gyroX_index], System.Globalization.CultureInfo.InvariantCulture)}
-            };
-
-            //x_priori = Ad * xlast; //+ Bd * yn[1]
-            x_priori = mCalc.AddMatrix(
-                mCalc.MultiplyMatrix(Ad, xlast), mCalc.MultiplyMatrixWithScalar(Bd, yn[1, 0])
-            );
-            //P_priori = Ad * Plast * Ad.T + Gd * Q * Gd.T
-            P_priori = mCalc.AddMatrix(
-                mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(Ad, Plast), mCalc.Transpose(Ad)),
-                mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(Gd, Q), mCalc.Transpose(Gd))
-            );
-            //S = C * P_priori * C.T + R
-            S = mCalc.AddMatrix(
-                mCalc.MultiplyMatrix(mCalc.MultiplyMatrix(C, P_priori), mCalc.Transpose(C)),
-                R
-            );
-            //Kn = P_priori * C.T * linalg.pinv(S)
-            Kn = mCalc.MultiplyMatrix(
-                mCalc.MultiplyMatrix(P_priori, mCalc.Transpose(C)), mCalc.InvertMatrix(S)
-            );
-
-            //x_post = x_priori + Kn * (yn - C * x_priori         // - D * y[n, 1])
-            float u = yn[1, 0];
-            float[,] D_mul_u = mCalc.MultiplyMatrixWithScalar(D, u);
-            float[,] C_mul_xpriori = mCalc.MultiplyMatrix(C, x_priori);
-            x_post = mCalc.AddMatrix(
-                x_priori,
-                mCalc.MultiplyMatrix(Kn,
-                    mCalc.SubMatrix((mCalc.SubMatrix(yn, C_mul_xpriori)), D_mul_u)
-                )
-            );
-
-            //P_post = (np.eye(2) - Kn * C) * P_priori
-            P_post = mCalc.MultiplyMatrix(mCalc.SubMatrix(Identity, mCalc.MultiplyMatrix(Kn, C)), P_priori);
-
-            x.Add(x_post);
-            P.Add(P_post);
-            K.Add(Kn);
-        }
-        mCalc.printMatrix(x[480]);
-        mCalc.printMatrix(P[480]);
-    }
-    */
-
     //Methode zur Ausführung eines Kalman-Filter Schrittes und gleichzeitiges schreiben der Filterung in eine CSV
     public void StartKalmanFilter(int n, string msg)
     {
         string newMsg = msg;
         if (n == 0)
         {
-            newMsg += fieldSeperater + "angle" + fieldSeperater + "filteredAngle";
+            newMsg += fieldSeperater + "angle" + fieldSeperater + "filteredAngle" + fieldSeperater + "Offset" + fieldSeperater + "P";
         }
         else if (n>0)
         {
@@ -341,7 +252,11 @@ public class KalmanFilter : MonoBehaviour {
 
         return angle.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) 
             + fieldSeperater 
-            + x_post[0, 0].ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+            + x_post[0, 0].ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+            + fieldSeperater
+            + x_post[2, 0].ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+            + fieldSeperater
+            + P_post[0, 0].ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     //Methode zur Umrechnung der Flexsensor-Werte in einen Zahlenbereich zwischen ~ 0-90 
