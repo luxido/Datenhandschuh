@@ -21,8 +21,6 @@ public class KalmanFilter : MonoBehaviour {
         K = new List<float[,]>();
     private float xGyroNew = 0;
     private List<float> xGyro = new List<float>();
-
-    //float[,] x = {Winkel(Biege & ausGyro errechnet), Winkelgeschwindigkeit(Gyro), Offset(Gyro) }  
     
     //Deklarierung aller für den Kalman-Filter notwendigen Vektoren und Matrizen sowie des Einheitsvektors
     private float[,] x0, P0, A, Ad, C, Gd, Q, R, Identity, Bd;
@@ -90,62 +88,6 @@ public class KalmanFilter : MonoBehaviour {
         R = new float[,]{ 
             { 12, 0},
             { 0, 29}
-        };
-    }
-
-    private void setVariablesExample()
-    {
-        Ts = 0.033f;
-        sigma_biege = 3f;
-        sigma_gyro = 0.5f;
-        sigma_offset = -7f;
-
-        Identity = new float[,] {
-            { 1, 0 },
-            { 0, 1 }
-        };
-
-        //Erster x-Eintrag
-        x0 = new float[,] {
-            { 0 },
-            { 0 }
-        };
-
-        P0 = new float[,]{
-            { 100, 0 },
-            { 0, 100 }
-        };
-
-        A = new float[,]{
-            { 0, -1 },
-            { 0, 0 },
-        };
-
-        Ad = mCalc.AddMatrix(A, Identity);
-
-        Bd = new float[,]{
-            {Ts},
-            {0},
-        };
-
-        C = new float[,]{
-            { 1, 0 },
-            { 0, 0 }
-        };
-
-        Gd = new float[,]{
-            { Ts, -Ts },
-            { 0, Ts }
-        };
-
-        Q = new float[,]{
-            { pow(sigma_gyro,2), 0},
-            { 0, pow(sigma_offset,2)}
-        };
-
-        R = new float[,]{
-            { 702, 0},
-            { 0, 1000}
         };
     }
 
@@ -241,14 +183,6 @@ public class KalmanFilter : MonoBehaviour {
         unfilteredBiege.transform.eulerAngles = new Vector3(angle, 0, 0);
         unfilteredGyro.transform.eulerAngles = new Vector3(cumSum(xGyro)*Ts, 0, 0);
         filtered.transform.eulerAngles = new Vector3(x_post[0, 0], 0, 0);
-
-        //Debug.Log(angle);
-        //Debug.Log(x_post[0, 0]);
-        //Debug.Log("yn");
-        //mCalc.printMatrix(yn);
-        //Debug.Log("Xpost");
-        //mCalc.printMatrix(x_post);
-        //mCalc.printMatrix(P_post);
 
         return angle.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) 
             + fieldSeperater 
